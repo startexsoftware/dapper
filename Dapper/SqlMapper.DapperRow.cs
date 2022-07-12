@@ -171,17 +171,20 @@ namespace Dapper
             private object SetValue(string key, object value, bool isAdd)
             {
                 if (key == null) throw new ArgumentNullException(nameof(key));
-                int index = table.IndexOfName(key);
-                if (index < 0)
+                lock (table)        // added by eric to fix concurrency issue with adding new properties to the dynamic row objects returned by dapper post-query   --  ERIC STEVENS, ETS, STS, STARTEX, EHSINSIGHT  --   https://github.com/DapperLib/Dapper/issues/1024
                 {
-                    index = table.AddField(key);
+                    int index = table.IndexOfName(key);
+                    if (index < 0)
+                    {
+                        index = table.AddField(key);
+                    }
+                    else if (isAdd && index < values.Length && !(values[index] is DeadValue))
+                    {
+                        // then semantically, this value already exists
+                        throw new ArgumentException("An item with the same key has already been added", nameof(key));
+                    }
+                    return SetValue(index, value);
                 }
-                else if (isAdd && index < values.Length && !(values[index] is DeadValue))
-                {
-                    // then semantically, this value already exists
-                    throw new ArgumentException("An item with the same key has already been added", nameof(key));
-                }
-                return SetValue(index, value);
             }
             internal object SetValue(int index, object value)
             {
