@@ -1,6 +1,6 @@
 {
-  "version": "2.0",
-  "assemblyVersion": "2.0.0.0",
+  "version": "22.0",
+  "assemblyVersion": "22.0.0.0",
   "publicReleaseRefSpec": [
     "^refs/heads/main$",
     "^refs/tags/v\\d+\\.\\d+"

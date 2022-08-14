@@ -171,9 +171,10 @@ namespace Dapper
             private object SetValue(string key, object value, bool isAdd)
             {
                 if (key == null) throw new ArgumentNullException(nameof(key));
-                lock (table)        // added by eric to fix concurrency issue with adding new properties to the dynamic row objects returned by dapper post-query   --  ERIC STEVENS, ETS, STS, STARTEX, EHSINSIGHT  --   https://github.com/DapperLib/Dapper/issues/1024
+                int index;
+                lock (table)        // added by eric to fix concurrency issue with adding new properties to the dynamic row objects returned by dapper post-query -- https://github.com/DapperLib/Dapper/issues/1024
                 {
-                    int index = table.IndexOfName(key);
+                    index = table.IndexOfName(key);
                     if (index < 0)
                     {
                         index = table.AddField(key);
@@ -182,9 +183,9 @@ namespace Dapper
                     {
                         // then semantically, this value already exists
                         throw new ArgumentException("An item with the same key has already been added", nameof(key));
-                    }
-                    return SetValue(index, value);
+                    }                    
                 }
+                return SetValue(index, value);
             }
             internal object SetValue(int index, object value)
             {

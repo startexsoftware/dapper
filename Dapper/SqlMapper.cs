@@ -27,6 +27,16 @@ namespace Dapper
     /// </summary>
     public static partial class SqlMapper
     {
+
+
+        /// <summary>
+        /// Used to detect build server builds that fetch from nuget instead of our custom forked version of Dapper
+        /// </summary>
+        public static bool IsCustomVersion = true;          // added by eric
+
+
+
+
         private class PropertyInfoByNameComparer : IComparer<PropertyInfo>
         {
             public int Compare(PropertyInfo x, PropertyInfo y) => string.CompareOrdinal(x.Name, y.Name);
